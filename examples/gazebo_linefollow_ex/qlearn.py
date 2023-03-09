@@ -1,5 +1,6 @@
 import random
 import pickle
+import numpy as np
 
 
 class QLearn:
@@ -18,7 +19,7 @@ class QLearn:
         # TODO: Implement loading Q values from pickle file.
 
         with open(filename+".pickle", 'rb') as f:
-            self.q = data
+            self.q = pickle.load(f)
             f.close()
 
         print("Loaded file: {}".format(filename+".pickle"))
@@ -62,27 +63,40 @@ class QLearn:
 
         # THE NEXT LINES NEED TO BE MODIFIED TO MATCH THE REQUIREMENTS ABOVE 
 
-        q = [self.getQ(state,a) for a in self.actions]
-        maxQ = max(q)
+        # q = [self.getQ(state,a) for a in self.actions]
+        # maxQ = max(q)
 
-        if random.random() < self.epsilon:
-            minQ = min(q)
-            mag = max(abs(minQ),abs(maxQ))
-            q = [q[i] + random.random()*mag - 0.5*mag for i in range(len(self.actions))]
-            maxQ = max(q)
+        # if random.random() < self.epsilon:
+        #     minQ = min(q)
+        #     mag = max(abs(minQ),abs(maxQ))
+        #     q = [q[i] + random.random()*mag - 0.5*mag for i in range(len(self.actions))]
+        #     maxQ = max(q)
         
-        count = q.count(maxQ)
+        # count = q.count(maxQ)
 
-        if count > 1:
-            best = [i for i in range(len(self.actions)) if q[i] == maxQ]
-            i = random.choice(best)
+        # if count > 1:
+        #     best = [i for i in range(len(self.actions)) if q[i] == maxQ]
+        #     i = random.choice(best)
+        # else:
+        #     i = q.index(maxQ)
+
+        # action = self.actions[i]
+        # if return_q:
+        #     return action, q
+
+        # return action
+
+        exploit = np.random.choice(2, 1, p=[self.epsilon, 1-self.epsilon])[0]
+
+        if not exploit:
+            #choose random action
+            action = self.actions[np.random.choice(len(self.actions), 1)[0]]
         else:
-            i = q.index(maxQ)
+            #in case where 2 actions have same Q, arbitrarily choose one
+            action = max([a for a in self.actions], key=lambda a: self.q.get((state, a), 0.0))
 
-        action = self.actions[i]
-        if return_q:
-            return action, q
-
+        if (return_q):
+            return (action, self.q.get((state, action), 0.0))
         return action
 
     def learn(self, state1, action1, reward, state2):

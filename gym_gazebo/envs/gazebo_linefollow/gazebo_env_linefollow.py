@@ -76,7 +76,7 @@ class Gazebo_Linefollow_Env(gazebo_env.GazeboEnv):
             # Find the largest contour
             largest_contour = get_largest_contour(threshold)
 
-            if cv2.contourArea(largest_contour) > 100:
+            if cv2.contourArea(largest_contour) > 200:
                 self.timeout = 0
             
                 # Get the centroid of the largest contour
@@ -91,7 +91,7 @@ class Gazebo_Linefollow_Env(gazebo_env.GazeboEnv):
                 self.timeout+=1
 
         if self.timeout >= 30:
-                done = False
+                done = True
 
         cv2.imshow("raw", image)
         cv2.waitKey(1)
@@ -162,7 +162,7 @@ class Gazebo_Linefollow_Env(gazebo_env.GazeboEnv):
         # Set the rewards for your action
         if not done:
             if action == 0:  # FORWARD
-                reward = 4
+                reward = 10
             elif action == 1:  # LEFT
                 reward = 2
             else:
